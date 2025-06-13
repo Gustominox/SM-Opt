@@ -4,7 +4,6 @@ CFLAGS := -Wall -Wextra
 CFLAGS += -funroll-loops 
 CFLAGS += -Ofast 
 CFLAGS += -ftree-vectorize
-# CFLAGS += -march=native
 CFLAGS += -mtune=native
 
 SOURCES := $(wildcard src/*.c)

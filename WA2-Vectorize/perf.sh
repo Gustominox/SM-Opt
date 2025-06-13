@@ -20,6 +20,6 @@ make clean && make
 echo "Start timing"
 
 # time -v ./bin/sparse > ../logs/${output_file}.csv 2>&1
-perf stat -x, ./bin/sparse > ../logs/${output_file}.csv 2>&1
+perf stat -x, ./bin/sparse > ../logs-2048/${output_file}.csv 2>&1
 
 echo "Finished"
