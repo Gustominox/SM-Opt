@@ -1,5 +1,5 @@
 CC   := gcc
-CFLAGS := -Wall -Wextra -g -O2
+CFLAGS := -Wall -Wextra
 
 SOURCES := $(wildcard src/*.c)
 TARGETS := $(patsubst src/%.c, bin/%, $(SOURCES))

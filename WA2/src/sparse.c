@@ -85,9 +85,9 @@ int main() {
     srand((unsigned int) time(NULL));
 
     // Define matrix dimensions.
-    int m = 64; // Rows in matrix A.
-    int n = 64; // Columns in matrix A and rows in matrix B.
-    int p = 64; // Columns in matrix B.
+    int m = 1024*2; // Rows in matrix A.
+    int n = 1024*2; // Columns in matrix A and rows in matrix B.
+    int p = 1024*2; // Columns in matrix B.
     
     // Define the percentage of zeros to be inserted (e.g., 70% zeros).
     int percentZeros = 70;

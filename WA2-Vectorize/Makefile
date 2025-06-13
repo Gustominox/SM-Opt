@@ -1,5 +1,11 @@
 CC   := gcc
-CFLAGS := -Wall -Wextra -g -O2
+# CFLAGS := -Wall -Wextra 
+CFLAGS := -Wall -Wextra 
+CFLAGS += -funroll-loops 
+CFLAGS += -Ofast 
+CFLAGS += -ftree-vectorize
+# CFLAGS += -march=native
+CFLAGS += -mtune=native
 
 SOURCES := $(wildcard src/*.c)
 TARGETS := $(patsubst src/%.c, bin/%, $(SOURCES))
