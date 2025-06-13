@@ -1,0 +1,2 @@
+run_name;status;task_clock;context_switches;cpu_migrations;page_faults;cycles;stalled_cycles_frontend;stalled_cycles_backend;instructions;branches;branch_misses;elapsed_time;user_time;sys_time
+WA-NoOptimization-perf;correct;2.06,msec,task-clock,2064772,100.00,0.082,CPUs;4,,context-switches,2064772,100.00,0.002,M/sec;0,,cpu-migrations,2064772,100.00,0.000,K/sec;66,,page-faults,2064772,100.00,0.032,M/sec;,,,,,0.11,stalled;;;10850209,,instructions,2071431,100.00,1.59,insn;34359,,branch-misses,1473961,71.16,1.59,of;;;;
