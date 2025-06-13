@@ -1,5 +1,7 @@
 #!/bin/sh
 #SBATCH --nodes=1
+#SBATCH --cpus-per-task=64
+#SBATCH --ntasks-per-node=1
 #SBATCH --exclusive
 #SBATCH --time=00:40:00
 #SBATCH --partition=normal-x86
@@ -10,12 +12,16 @@
 # Consider using SBATCH --exclusive option outside of the class
 # It ensures that no other user pollutes your measurements
 
-module load GCC/13.3.0
+module --ignore_cache load GCC/13.3.0
 source /share/apps-x86/ohpc/pub/apps/intel/oneapi/setvars.sh --force
 
 echo "Compiling..."
 output_file="$1"
 make clean && make
+
+# Set the number of OpenMP threads
+export OMP_NUM_THREADS=16  # You can adjust this based on the number of cores you want to use
+echo "ompThreads=${OMP_NUM_THREADS}"
 
 echo "Start timing"
 
