@@ -97,15 +97,19 @@ void sparse_multiply_csc(float *A_values, int *A_row_indices, int *A_col_pointer
                          float **C, int p)
 {
 // Multiply each column of B by A in the CSC format
-#pragma omp parallel for schedule(static, 256)
+#pragma omp parallel for schedule(static)
     for (int j = 0; j < p; j++)
     {
+#pragma omp parallel for schedule(static)
+
         for (int k = B_col_pointers[j]; k < B_col_pointers[j + 1]; k++)
         {
             int rowB = B_row_indices[k];
             float valueB = B_values[k];
 
             // Multiply with the corresponding column of A
+#pragma omp parallel for schedule(static)
+
             for (int i = A_col_pointers[rowB]; i < A_col_pointers[rowB + 1]; i++)
             {
                 int colA = A_row_indices[i];

@@ -1,7 +1,7 @@
 #!/bin/sh
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=64
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=2
 #SBATCH --exclusive
 #SBATCH --time=00:40:00
 #SBATCH --partition=normal-x86
@@ -20,12 +20,15 @@ output_file="$1"
 make clean && make
 
 # Set the number of OpenMP threads
-export OMP_NUM_THREADS=16  # You can adjust this based on the number of cores you want to use
+export OMP_NUM_THREADS=128  # You can adjust this based on the number of cores you want to use
+export OMP_PROC_BIND=TRUE 
+export OMP_PLACES=cores
+
 echo "ompThreads=${OMP_NUM_THREADS}"
 
 echo "Start timing"
 
 # time -v ./bin/sparse > ../logs/${output_file}.csv 2>&1
-perf stat -x, ./bin/sparse > ../logs-2048/${output_file}.csv 2>&1
+perf stat -x, ./bin/sparse > ../logs-4096/${output_file}.csv 2>&1
 
 echo "Finished"
