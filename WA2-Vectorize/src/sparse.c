@@ -4,8 +4,9 @@
 #include <math.h>
 
 #define EPSILON 1e-6
-#define SIZE 4096
-
+#ifndef SIZE
+#define SIZE 1024
+#endif
 // Function to create a float matrix with a specified percentage of zeros (value between 0-99).
 // Non-zero entries are generated randomly (values between 1.0 and 10.0).
 float **create_matrix(int rows, int cols, int percentZeros)

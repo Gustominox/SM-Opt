@@ -1,5 +1,5 @@
 CC   := gcc
-CFLAGS := -Wall -Wextra
+CFLAGS := -Wall -Wextra -D SIZE=$(SIZE)
 
 SOURCES := $(wildcard src/*.c)
 TARGETS := $(patsubst src/%.c, bin/%, $(SOURCES))

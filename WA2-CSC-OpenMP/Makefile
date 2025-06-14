@@ -1,6 +1,6 @@
 CC   := gcc
 # CFLAGS := -Wall -Wextra 
-CFLAGS := -Wall -Wextra 
+CFLAGS := -Wall -Wextra -D SIZE=$(SIZE)
 CFLAGS += -funroll-loops 
 CFLAGS += -Ofast 
 CFLAGS += -ftree-vectorize

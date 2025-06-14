@@ -17,10 +17,22 @@ source /share/apps-x86/ohpc/pub/apps/intel/oneapi/setvars.sh --force
 
 echo "Compiling..."
 output_file="$1"
-make clean && make
+SIZE="$2"
+omp_num_threads=$3
+
+cd WA2-CSC-OpenMP
+
+if [ ! -d "../logs-${SIZE}" ]; then
+    echo "Directory ../logs-${SIZE} does not exist. Creating it..."
+    mkdir -p ../logs-${SIZE}
+else
+    echo "Directory ../logs-${SIZE} already exists."
+fi
+
+make clean && make SIZE=${SIZE}
 
 # Set the number of OpenMP threads
-export OMP_NUM_THREADS=128  # You can adjust this based on the number of cores you want to use
+export OMP_NUM_THREADS=${omp_num_threads}  # You can adjust this based on the number of cores you want to use
 export OMP_PROC_BIND=TRUE 
 export OMP_PLACES=cores
 
@@ -28,7 +40,6 @@ echo "ompThreads=${OMP_NUM_THREADS}"
 
 echo "Start timing"
 
-# time -v ./bin/sparse > ../logs/${output_file}.csv 2>&1
-perf stat -x, ./bin/sparse > ../logs-4096/${output_file}.csv 2>&1
+perf stat -x, ./bin/sparse > ../logs-${SIZE}/${output_file}.csv 2>&1
 
 echo "Finished"
