@@ -1,0 +1,9 @@
+The sparse multiplication result matches the control matrix.
+67628.77,msec,task-clock,67628772220,100.00,1.257,CPUs utilized
+391,,context-switches,67628772220,100.00,0.006,K/sec
+32,,cpu-migrations,67628772220,100.00,0.000,K/sec
+1446,,page-faults,67628772220,100.00,0.021,K/sec
+135253407009,,cycles,67629102370,100.00,2.000,GHz
+60299411469,,instructions,67629102370,100.00,0.45,insn per cycle
+<not supported>,,branches,0,100.00,,
+21658359,,branch-misses,67629102370,100.00,,
