@@ -10,13 +10,13 @@ CFLAGS += -fopenmp
 SOURCES := $(wildcard src/*.c)
 TARGETS := $(patsubst src/%.c, bin/%, $(SOURCES))
 
-all: $(TARGETS)
+all: $(TARGETS) 
 
 bin:
 	mkdir -p bin
 
 bin/%: src/%.c | bin
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o bin/$(OUTFILE) $<
 
 clean:
 	rm -rf bin

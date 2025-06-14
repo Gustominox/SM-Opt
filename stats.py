@@ -1,97 +1,75 @@
 import os
 import csv
+import re  
 
-# Define a function to parse the logs and extract relevant information
-def parse_log(file_path):
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
-
-    # Check the first line for correctness
-    status = "correct" if "The sparse multiplication result matches the control matrix." in lines[0] else "incorrect"
-
-    # Initialize a dictionary to store stats
-    stats = {
-        "task_clock": None,
-        "context_switches": None,
-        "cpu_migrations": None,
-        "page_faults": None,
-        "cycles": None,
-        "stalled_cycles_frontend": None,
-        "stalled_cycles_backend": None,
-        "instructions": None,
-        "branches": None,
-        "branch_misses": None,
-        "elapsed_time": None,
-        "user_time": None,
-        "sys_time": None
-    }
-
-    # Extract stats from the perf output using pattern matching
-    for line in lines:
-        if "task-clock" in line:
-            stats["task_clock"] = line.split()[0].strip()
-        elif "context-switches" in line:
-            stats["context_switches"] = line.split()[0].strip()
-        elif "cpu-migrations" in line:
-            stats["cpu_migrations"] = line.split()[0].strip()
-        elif "page-faults" in line:
-            stats["page_faults"] = line.split()[0].strip()
-        elif "cycles" in line:
-            stats["cycles"] = line.split()[0].strip()
-        elif "stalled-cycles-frontend" in line:
-            stats["stalled_cycles_frontend"] = line.split()[0].strip()
-        elif "stalled-cycles-backend" in line:
-            stats["stalled_cycles_backend"] = line.split()[0].strip()
-        elif "instructions" in line:
-            stats["instructions"] = line.split()[0].strip()
-        elif "branches" in line:
-            stats["branches"] = line.split()[0].strip()
-        elif "branch-misses" in line:
-            stats["branch_misses"] = line.split()[0].strip()
-        elif "seconds time elapsed" in line:
-            stats["elapsed_time"] = line.split()[0].strip()
-        elif "seconds user" in line:
-            stats["user_time"] = line.split()[0].strip()
-        elif "seconds sys" in line:
-            stats["sys_time"] = line.split()[0].strip()
-
-    # Extract run name (based on the filename), removing the '.log' extension
-    run_name = os.path.splitext(os.path.basename(file_path))[0]
-
-    # Return the extracted information as a dictionary
-    return {
-        "run_name": run_name,
-        "status": status,
-        **stats
-    }
-
-# Path to the directory containing log files
-log_dir = 'logs'
-
-# Get a list of all log files in the directory
-log_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if os.path.isfile(os.path.join(log_dir, f))]
-
-# Prepare a list to store the parsed data
-parsed_data = []
-
-# Parse each log file and append the data
-for log_file in log_files:
-    parsed_data.append(parse_log(log_file))
-
-# Define the CSV file name
-csv_file = 'output.csv'
-
-# Define the field names (headers) for the CSV
-fieldnames = [
-    "run_name", "status", "task_clock", "context_switches", "cpu_migrations", "page_faults",
-    "cycles", "stalled_cycles_frontend", "stalled_cycles_backend", "instructions", "branches", 
-    "branch_misses", "elapsed_time", "user_time", "sys_time"
+# List of directories to process
+logs_root_dirs = [
+    # './logs-64',  
+    # './logs-1024',
+    # './logs-2048',
+    './logs-4096'
 ]
 
-# Write the parsed data to a CSV file with ';' as the delimiter
-with open(csv_file, 'w', newline='') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
-    writer.writeheader()  # Write the header row
-    writer.writerows(parsed_data)
+# Function to process a single file and extract the timeInMsec
+def extract_time_from_file(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        print(lines)
+        
+        if len(lines) > 1:
+            try:
+                # The time in msec is assumed to be in the first field of the second row
+                time_in_msec = lines[1].split(',')[0]
+                return time_in_msec
+            except IndexError:
+                print(f"Error processing file: {file_path}, line 2 does not have enough data.")
+                return None
+        else:
+            print(f"Error: {file_path} does not have enough lines.")
+            return None
 
-print(f"CSV file '{csv_file}' created successfully.")
+# Function to extract the number from the directory name
+def extract_size_from_dir(directory):
+    match = re.search(r'(\d+)', directory)  # Look for one or more digits
+    if match:
+        return match.group(1)  # Return the number as a string
+    else:
+        return 'Unknown'  # If no number is found, return 'Unknown'
+
+# Create a new CSV to store the sorted output
+output_csv = 'output_sorted.csv'
+with open(output_csv, mode='w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Filename', 'Size', 'timeInSec', 'timeInMsec'])  # Write header
+
+    # Iterate over each specified root directory
+    for root_dir in logs_root_dirs:
+        for dirpath, dirnames, filenames in os.walk(root_dir):
+            # List to collect rows for each directory
+            rows = []
+
+            for filename in filenames:
+                if filename.endswith('.csv'):
+                    # Get the full path of the file
+                    file_path = os.path.join(dirpath, filename)
+
+                    # Extract the directory and size
+                    directory = os.path.basename(dirpath)
+                    size = extract_size_from_dir(os.path.basename(dirpath))
+
+                    time_in_msec = extract_time_from_file(file_path)
+                    try:
+                        time_in_sec = float(time_in_msec) / 1000.0
+                    except:
+                        time_in_sec = None
+
+                    # Add the row to the list for this directory
+                    rows.append([filename, size, time_in_sec, time_in_msec])
+
+            # Sort the rows by time_in_sec (ignoring rows with None in time_in_sec)
+            rows.sort(key=lambda row: (row[2] if row[2] is not None else float('inf')))
+
+            # Write the sorted rows for this directory to the output CSV
+            writer.writerows(rows)
+            
+print(f"CSV with extracted data has been saved as {output_csv}")

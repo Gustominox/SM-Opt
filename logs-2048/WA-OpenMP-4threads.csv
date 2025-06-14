@@ -1,12 +1,12 @@
 The sparse multiplication result matches the control matrix.
-24954.28,msec,task-clock,24954279307,100.00,1.061,CPUs utilized
-194,,context-switches,24954279307,100.00,0.008,K/sec
-4,,cpu-migrations,24954279307,100.00,0.000,K/sec
-50725,,page-faults,24954279307,100.00,0.002,M/sec
-84391688380,,cycles,20795553959,83.33,3.382,GHz
-87671823,,stalled-cycles-frontend,20795667248,83.33,0.10,frontend cycles idle
-76495101409,,stalled-cycles-backend,20796262988,83.34,90.64,backend cycles idle
-63761610007,,instructions,20794450685,83.33,0.76,insn per cycle
-,,,,,1.20,stalled cycles per insn
-1933833072,,branches,20795959681,83.34,77.495,M/sec
-17555191,,branch-misses,20794395959,83.33,0.91,of all branches
+29308.24,msec,task-clock,29308240133,100.00,1.053,CPUs utilized
+208,,context-switches,29308240133,100.00,0.007,K/sec
+4,,cpu-migrations,29308240133,100.00,0.000,K/sec
+50915,,page-faults,29308240133,100.00,0.002,M/sec
+99079620892,,cycles,24424203024,83.34,3.381,GHz
+111006634,,stalled-cycles-frontend,24426192255,83.34,0.11,frontend cycles idle
+91166721266,,stalled-cycles-backend,24423123508,83.33,92.01,backend cycles idle
+63761103408,,instructions,24423590099,83.33,0.64,insn per cycle
+,,,,,1.43,stalled cycles per insn
+1940366033,,branches,24422457651,83.33,66.205,M/sec
+17585602,,branch-misses,24422281698,83.33,0.91,of all branches
