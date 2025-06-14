@@ -54,3 +54,4 @@ dkms.conf
 
 slurm-err/
 slurm-output/
+.vscode
