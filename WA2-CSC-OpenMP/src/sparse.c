@@ -4,7 +4,7 @@
 #include <math.h>
 
 #define EPSILON 1e-6
-#define SIZE 2048
+#define SIZE 4096
 
 // Function to create a standard matrix with a specified percentage of zeros (value between 0-99).
 // Non-zero entries are generated randomly (values between 1.0 and 10.0).
