@@ -25,7 +25,7 @@ fi
 
 echo "Compiling..."
 
-cd WA2-CSC
+cd WA2-CSC-CSR
 make clean && make SIZE=${SIZE}
 
 echo "Start timing"

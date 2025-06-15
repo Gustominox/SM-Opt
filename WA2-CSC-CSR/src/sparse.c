@@ -2,249 +2,166 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 
 #define EPSILON 1e-6
 #ifndef SIZE
 #define SIZE 1024
 #endif
+
 // Function to create a standard matrix with a specified percentage of zeros (value between 0-99).
 // Non-zero entries are generated randomly (values between 1.0 and 10.0).
-float **create_matrix(int rows, int cols, int percentZeros)
-{
-    float **matrix = (float **)malloc(rows * sizeof(float *));
-    if (!matrix)
-    {
-        fprintf(stderr, "Memory allocation failed for matrix rows.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    for (int i = 0; i < rows; i++)
-    {
-        matrix[i] = (float *)malloc(cols * sizeof(float));
-
-        if (!matrix[i])
-        {
-            fprintf(stderr, "Memory allocation failed for matrix[%d].\n", i);
-            exit(EXIT_FAILURE);
-        }
-
-        for (int j = 0; j < cols; j++)
-        {
-            if ((rand() % 100) < percentZeros)
-                matrix[i][j] = 0.0f;
-            else
-                matrix[i][j] = (float)((rand() % 10) + 1);
+float **create_matrix(int rows, int cols, int percentZeros) {
+    float **matrix = malloc(rows * sizeof(float *));
+    if (!matrix) { perror("alloc dense rows"); exit(EXIT_FAILURE); }
+    for (int i = 0; i < rows; i++) {
+        matrix[i] = malloc(cols * sizeof(float));
+        if (!matrix[i]) { perror("alloc dense cols"); exit(EXIT_FAILURE); }
+        for (int j = 0; j < cols; j++) {
+            matrix[i][j] = ((rand() % 100) < percentZeros) ? 0.0f : (float)((rand() % 10) + 1);
         }
     }
     return matrix;
 }
 
-// Function to convert a standard dense matrix to the CSC format
-void convert_dense_to_csc(float **dense_matrix, float **values, int **row_indices, int **col_pointers, int rows, int cols)
-{
-    int non_zero_count = 0;
-
-    // Allocate memory for the CSC representation
-    *values = (float *)malloc(rows * cols * sizeof(float)); // Worst case, all non-zero
-    *row_indices = (int *)malloc(rows * cols * sizeof(int));
-    *col_pointers = (int *)malloc((cols + 1) * sizeof(int)); // One extra for the last column pointer
-
-    if (!*values || !*row_indices || !*col_pointers)
-    {
-        fprintf(stderr, "Memory allocation failed for CSC matrix components.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Initialize the column pointers
-    (*col_pointers)[0] = 0;
-
-    // Iterate over the dense matrix and populate the CSC format
-    for (int j = 0; j < cols; j++)
-    {
-        (*col_pointers)[j + 1] = (*col_pointers)[j]; // Default to same as previous column
-
-        for (int i = 0; i < rows; i++)
-        {
-            if (fabs(dense_matrix[i][j]) > EPSILON)
-            {
-                (*values)[non_zero_count] = dense_matrix[i][j]; // Non-zero value
-                (*row_indices)[non_zero_count] = i;             // Row index of non-zero value
-                non_zero_count++;
-                (*col_pointers)[j + 1]++; // Update the column pointer
+// Convert dense to CSC
+void convert_dense_to_csc(float **dense, float **values, int **row_idx, int **col_ptr, int rows, int cols) {
+    int nnz = 0;
+    *values = malloc(rows * cols * sizeof(float));
+    *row_idx = malloc(rows * cols * sizeof(int));
+    *col_ptr = malloc((cols + 1) * sizeof(int));
+    if (!*values || !*row_idx || !*col_ptr) { perror("alloc CSC"); exit(EXIT_FAILURE); }
+    (*col_ptr)[0] = 0;
+    for (int j = 0; j < cols; j++) {
+        (*col_ptr)[j+1] = (*col_ptr)[j];
+        for (int i = 0; i < rows; i++) {
+            float v = dense[i][j];
+            if (fabs(v) > EPSILON) {
+                (*values)[nnz] = v;
+                (*row_idx)[nnz] = i;
+                nnz++;
+                (*col_ptr)[j+1]++;
             }
         }
     }
 }
 
-// Free dynamically allocated dense matrix
-void free_matrix(float **matrix, int rows)
-{
-    for (int i = 0; i < rows; i++)
-        free(matrix[i]);
-    free(matrix);
-}
-
-// Free dynamically allocated CSC matrix
-void free_csc_matrix(float *values, int *row_indices, int *col_pointers)
-{
-    free(values);
-    free(row_indices);
-    free(col_pointers);
-}
-
-// CSC matrix multiplication
-void sparse_multiply_csc(float *A_values, int *A_row_indices, int *A_col_pointers,
-                         float *B_values, int *B_row_indices, int *B_col_pointers,
-                         float **C, int p)
-{
-    // Multiply each column of B by A in the CSC format
-    for (int j = 0; j < p; j++)
-    {
-        for (int k = B_col_pointers[j]; k < B_col_pointers[j + 1]; k++)
-        {
-            int rowB = B_row_indices[k];
-            float valueB = B_values[k];
-
-            // Multiply with the corresponding column of A
-            for (int i = A_col_pointers[rowB]; i < A_col_pointers[rowB + 1]; i++)
-            {
-                int colA = A_row_indices[i];
-                float valueA = A_values[i];
-
-                // Update C[i][j]
-                C[colA][j] += valueA * valueB;
+// Convert dense to CSR
+void convert_dense_to_csr(float **dense, float **values, int **col_idx, int **row_ptr, int rows, int cols) {
+    int nnz = 0;
+    *values = malloc(rows * cols * sizeof(float));
+    *col_idx = malloc(rows * cols * sizeof(int));
+    *row_ptr = malloc((rows + 1) * sizeof(int));
+    if (!*values || !*col_idx || !*row_ptr) { perror("alloc CSR"); exit(EXIT_FAILURE); }
+    (*row_ptr)[0] = 0;
+    for (int i = 0; i < rows; i++) {
+        (*row_ptr)[i+1] = (*row_ptr)[i];
+        for (int j = 0; j < cols; j++) {
+            float v = dense[i][j];
+            if (fabs(v) > EPSILON) {
+                (*values)[nnz] = v;
+                (*col_idx)[nnz] = j;
+                nnz++;
+                (*row_ptr)[i+1]++;
             }
         }
     }
 }
 
-// Standard matrix multiplication (control method).
-void standard_multiply(float **A, float **B, float **C, int m, int n, int p)
+// Free functions
+void free_matrix(float **M, int rows) { for (int i = 0; i < rows; i++) free(M[i]); free(M); }
+void free_csr(float *values, int *col_idx, int *row_ptr) { free(values); free(col_idx); free(row_ptr); }
+void free_csc(float *values, int *row_idx, int *col_ptr) { free(values); free(row_idx); free(col_ptr); }
+
+// Sparse multiply: A in CSR, B^T in CSC -> C dense
+void sparse_multiply_csr_csc(
+    float *A_val, int *A_col, int *A_row,
+    float *Bt_val, int *Bt_row, int *Bt_col,
+    float **C, int m)
 {
+    for (int i = 0; i < m; i++) {
+        for (int a = A_row[i]; a < A_row[i+1]; a++) {
+            int k = A_col[a];         // column index in A / row index in B
+            float vA = A_val[a];
+            // traverse column k of B^T => row k of B
+            for (int b = Bt_col[k]; b < Bt_col[k+1]; b++) {
+                int j = Bt_row[b];     // column index j in B
+                C[i][j] += vA * Bt_val[b];
+            }
+        }
+    }
+}
+
+// Standard multiply for verification
+void standard_multiply(float **A, float **B, float **C, int m, int n, int p) {
     for (int i = 0; i < m; i++)
-    {
         for (int j = 0; j < p; j++)
-        {
             for (int k = 0; k < n; k++)
-            {
                 C[i][j] += A[i][k] * B[k][j];
-            }
-        }
-    }
 }
 
-// Function to compare two float matrices using a tolerance.
-// Returns 1 if the matrices are identical within the tolerance, otherwise 0.
-int compare_matrices(float **mat1, float **mat2, int rows, int cols)
-{
+// Compare matrices
+int compare_matrices(float **X, float **Y, int rows, int cols) {
     for (int i = 0; i < rows; i++)
-    {
         for (int j = 0; j < cols; j++)
-        {
-            if (fabs(mat1[i][j] - mat2[i][j]) > EPSILON)
+            if (fabs(X[i][j] - Y[i][j]) > EPSILON)
                 return 0;
-        }
-    }
     return 1;
 }
 
-// Function to print a matrix
-void print_matrix(float **matrix, int rows, int cols)
-{
-    printf("\nMatrix (first 5 rows, 5 columns):\n");
-    for (int i = 0; i < (rows < 5 ? rows : 5); i++)
-    {
-        for (int j = 0; j < (cols < 5 ? cols : 5); j++)
-        {
-            printf("%.2f ", matrix[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-int main()
-{
-    // Seed the random number generator.
-    srand((unsigned int)time(NULL));
-
-    // Define matrix dimensions.
-    int m = SIZE; // Rows in matrix A.
-    int n = SIZE; // Columns in matrix A and rows in matrix B.
-    int p = SIZE; // Columns in matrix B.
-
-    // Define the percentage of zeros to be inserted (e.g., 70% zeros).
+int main() {
+    srand((unsigned)time(NULL));
+    int m = SIZE, n = SIZE, p = SIZE;
     int percentZeros = 70;
 
-    // Create matrices A and B in standard dense format
+    // Create dense matrices A (m x n) and B (n x p)
     float **A = create_matrix(m, n, percentZeros);
     float **B = create_matrix(n, p, percentZeros);
 
-    // Convert dense matrices A and B to CSC format
-    float *A_values, *B_values;
-    int *A_row_indices, *A_col_pointers;
-    int *B_row_indices, *B_col_pointers;
-    convert_dense_to_csc(A, &A_values, &A_row_indices, &A_col_pointers, m, n);
-    convert_dense_to_csc(B, &B_values, &B_row_indices, &B_col_pointers, n, p);
+    // Convert A to CSR
+    float *A_val; int *A_col, *A_row;
+    convert_dense_to_csr(A, &A_val, &A_col, &A_row, m, n);
 
-    // Allocate result matrix C (dense format)
-    float **C_sparse = (float **)malloc(m * sizeof(float *));
-    if (!C_sparse)
-    {
-        fprintf(stderr, "Memory allocation failed for result matrix C_sparse.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    for (int i = 0; i < m; i++)
-    {
-        C_sparse[i] = (float *)malloc(p * sizeof(float));
-        if (!C_sparse[i])
-        {
-            fprintf(stderr, "Memory allocation failed for result matrix row %d.\n", i);
-            exit(EXIT_FAILURE);
-        }
-
-        // Initialize matrix C_sparse to zero.
-        for (int j = 0; j < p; j++)
-        {
-            C_sparse[i][j] = 0.0f;
+    // Transpose B into B_T (p x n)
+    float **B_T = malloc(p * sizeof(float *));
+    for (int i = 0; i < p; i++) {
+        B_T[i] = malloc(n * sizeof(float));
+        for (int j = 0; j < n; j++) {
+            B_T[i][j] = B[j][i];
         }
     }
+    // Convert B_T to CSC => Bt_val, Bt_row, Bt_col
+    float *Bt_val; int *Bt_row, *Bt_col;
+    convert_dense_to_csc(B_T, &Bt_val, &Bt_row, &Bt_col, p, n);
+    free_matrix(B_T, p);
 
-    // Perform sparse matrix multiplication (CSC)
-    sparse_multiply_csc(A_values, A_row_indices, A_col_pointers,
-                        B_values, B_row_indices, B_col_pointers,
-                        C_sparse, p);
-
-    // Perform the standard multiplication to create the control matrix
-    float **C_std = (float **)malloc(m * sizeof(float *));
-    for (int i = 0; i < m; i++)
-    {
-        C_std[i] = (float *)malloc(p * sizeof(float));
-        for (int j = 0; j < p; j++)
-        {
-            C_std[i][j] = 0.0f;
-        }
+    // Allocate result matrix C_sparse
+    float **C_sparse = malloc(m * sizeof(float *));
+    for (int i = 0; i < m; i++) {
+        C_sparse[i] = calloc(p, sizeof(float));
     }
 
+    // Perform sparse multiplication
+    sparse_multiply_csr_csc(A_val, A_col, A_row,
+                            Bt_val, Bt_row, Bt_col,
+                            C_sparse, m);
+
+    // Verification with standard multiply
+    float **C_std = malloc(m * sizeof(float *));
+    for (int i = 0; i < m; i++) {
+        C_std[i] = calloc(p, sizeof(float));
+    }
     standard_multiply(A, B, C_std, m, n, p);
 
-    // Compare the results
-    if (compare_matrices(C_sparse, C_std, m, p))
-        printf("The sparse multiplication result matches the control matrix.\n");
-    else
-        printf("The sparse multiplication result does NOT match the control matrix.\n");
+    printf("%s\n",
+           compare_matrices(C_sparse, C_std, m, p) ? "Match!" : "Mismatch!");
 
-    // Print the first 5 rows and 5 columns of C_sparse and C_std
-    // print_matrix(C_sparse, m, p);
-    // print_matrix(C_std, m, p);
-
-    // Free all allocated memory
-    free_csc_matrix(A_values, A_row_indices, A_col_pointers);
-    free_csc_matrix(B_values, B_row_indices, B_col_pointers);
+    // Cleanup
+    free_csr(A_val, A_col, A_row);
+    free_csc(Bt_val, Bt_row, Bt_col);
     free_matrix(C_sparse, m);
     free_matrix(C_std, m);
     free_matrix(A, m);
     free_matrix(B, n);
-
     return 0;
 }
