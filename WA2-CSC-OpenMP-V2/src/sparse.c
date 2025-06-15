@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <omp.h>
 
 #define EPSILON 1e-6
 #ifndef SIZE
@@ -60,7 +61,6 @@ void convert_dense_to_csc(float **dense_matrix, float **values, int **row_indice
     (*col_pointers)[0] = 0;
 
     // Iterate over the dense matrix and populate the CSC format
-#pragma omp parallel for schedule(static)
     for (int j = 0; j < cols; j++)
     {
         (*col_pointers)[j + 1] = (*col_pointers)[j]; // Default to same as previous column
@@ -75,7 +75,7 @@ void convert_dense_to_csc(float **dense_matrix, float **values, int **row_indice
                 (*col_pointers)[j + 1]++; // Update the column pointer
             }
         }
-        }
+    }
 }
 
 // Free dynamically allocated dense matrix
@@ -95,23 +95,20 @@ void free_csc_matrix(float *values, int *row_indices, int *col_pointers)
 }
 
 // CSC matrix multiplication
-void sparse_multiply_csc(float *A_values, int *A_row_indices, int *A_col_pointers,
-                         float *B_values, int *B_row_indices, int *B_col_pointers,
-                         float **C, int p)
+void sparse_multiply_csc(float *__restrict__ A_values, int *__restrict__ A_row_indices, int *__restrict__ A_col_pointers,
+                         float *__restrict__ B_values, int *__restrict__ B_row_indices, int *__restrict__ B_col_pointers,
+                         float **__restrict__ C, int p)
 {
 // Multiply each column of B by A in the CSC format
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < p; j++)
     {
-#pragma omp parallel for schedule(static)
-
         for (int k = B_col_pointers[j]; k < B_col_pointers[j + 1]; k++)
         {
             int rowB = B_row_indices[k];
             float valueB = B_values[k];
 
             // Multiply with the corresponding column of A
-#pragma omp parallel for schedule(static)
 
             for (int i = A_col_pointers[rowB]; i < A_col_pointers[rowB + 1]; i++)
             {
@@ -139,6 +136,25 @@ void standard_multiply(float **A, float **B, float **C, int m, int n, int p)
         }
     }
 }
+
+// // Standard matrix multiplication (control method).
+// void standard_multiply(float **A, float **B, float **C, int m, int n, int p)
+// {
+// // Parallelize the outer two loops
+// #pragma omp parallel for collapse(2) shared(A, B, C, m, n, p)
+//     for (int i = 0; i < m; i++)
+//     {
+//         for (int j = 0; j < p; j++)
+//         {
+//             float sum = 0.0f;
+//             for (int k = 0; k < n; k++)
+//             {
+//                 sum += A[i][k] * B[k][j];
+//             }
+//             C[i][j] = sum;
+//         }
+//     }
+// }
 
 // Function to compare two float matrices using a tolerance.
 // Returns 1 if the matrices are identical within the tolerance, otherwise 0.

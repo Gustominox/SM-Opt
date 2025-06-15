@@ -20,7 +20,7 @@ output_file="$1"
 SIZE="$2"
 omp_num_threads=$3
 
-cd WA2-CSC-OpenMP
+cd WA2-CSC-OpenMP-V2
 
 if [ ! -d "../logs-${SIZE}" ]; then
     echo "Directory ../logs-${SIZE} does not exist. Creating it..."

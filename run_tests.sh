@@ -10,11 +10,12 @@ fi
 SIZE="$1"
 
 dirs=(
-    "WA2/"
-    "WA2-Vectorize/"
-    "WA2-CSC/"
+    # "WA2/"
+    # "WA2-Vectorize/"
+    # "WA2-CSC/"
     "WA2-CSC-OpenMP/"
-    "WA2-Vectorize-OpenMP/"
+    # "WA2-CSC-OpenMP-V2/"
+    # "WA2-Vectorize-OpenMP/"
 )
 
 
@@ -39,11 +40,11 @@ for dir in "${dirs[@]}"; do
             
         elif [[ "$dir" == "WA2-CSC-OpenMP/" ]]; then
             # sbatch --exclusive ./$dir/perf.sh WA-OpenMP-16threads ${SIZE} 16
-            for threads in 2 4 8 16 32 64 96 128; do
+            for threads in 2 4 8 16 32; do # 64 96 128; do
                 echo "Running with ${threads} threads..."
                 for run in {1..5}; do
                     echo "Run ${run} for ${threads} threads..."
-                    sbatch --exclusive ./WA2-CSC-OpenMP/perf.sh WA-CSC-OpenMP-${threads}threads-${run} ${SIZE} ${threads}
+                    sbatch --exclusive ./WA2-CSC-OpenMP/perf.sh WA-CSC-OpenMP-OneFor-${threads}threads-${run} ${SIZE} ${threads}
                 done
                 # sbatch --exclusive ./WA2-CSC-OpenMP/perf.sh WA-CSC-OpenMP-${threads}threads ${SIZE} ${threads}
             done
@@ -52,11 +53,32 @@ for dir in "${dirs[@]}"; do
                 echo "Running with ${threads} threads..."
                 for run in {1..5}; do
                     echo "Run ${run} for ${threads} threads..."
-                    sbatch --exclusive ./WA2-CSC-OpenMP/perf_arm.sh WA-CSC-OpenMP-Arm-${threads}threads-${run} ${SIZE} ${threads}
+                    sbatch --exclusive ./WA2-CSC-OpenMP/perf_arm.sh WA-CSC-OpenMP-Arm-OneFor-${threads}threads-${run} ${SIZE} ${threads}
                 done
                 # sbatch --exclusive ./WA2-CSC-OpenMP/perf.sh WA-CSC-OpenMP-${threads}threads ${SIZE} ${threads}
             done
         
+        elif [[ "$dir" == "WA2-CSC-OpenMP-V2/" ]]; then
+            # sbatch --exclusive ./$dir/perf.sh WA-OpenMP-16threads ${SIZE} 16
+            for threads in 2 4 8 16 32; do # 64 96 128; do
+                echo "Running with ${threads} threads..."
+                for run in {1..1}; do
+                    echo "Run ${run} for ${threads} threads..."
+                    sbatch --exclusive ./WA2-CSC-OpenMP-V2/perf.sh WA-CSC-OpenMP-V2-${threads}threads-${run} ${SIZE} ${threads}
+                done
+                # sbatch --exclusive ./WA2-CSC-OpenMP/perf.sh WA-CSC-OpenMP-${threads}threads ${SIZE} ${threads}
+            done
+
+            for threads in 2 4 8 16 32 48; do
+                echo "Running with ${threads} threads..."
+                for run in {1..1}; do
+                    echo "Run ${run} for ${threads} threads..."
+                    sbatch --exclusive ./WA2-CSC-OpenMP-V2/perf_arm.sh WA-CSC-OpenMP-Arm-V2-${threads}threads-${run} ${SIZE} ${threads}
+                done
+                # sbatch --exclusive ./WA2-CSC-OpenMP/perf.sh WA-CSC-OpenMP-${threads}threads ${SIZE} ${threads}
+            done
+        
+
         elif [[ "$dir" == "WA2-Vectorize-OpenMP/" ]]; then
             # sbatch --exclusive ./$dir/perf.sh WA-OpenMP-16threads ${SIZE} 16
             for threads in 2 4 8 16 32 64 96 128; do

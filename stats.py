@@ -6,8 +6,8 @@ import re
 logs_root_dirs = [
     # './logs-64',  
     # './logs-1024',
-    './logs-2048',
-    # './logs-4096'
+    # './logs-2048',
+    './logs-4096'
 ]
 
 # Function to process a single file and extract the timeInMsec
@@ -37,7 +37,7 @@ def extract_size_from_dir(directory):
         return 'Unknown'  # If no number is found, return 'Unknown'
 
 # Create a new CSV to store the sorted output
-output_csv = 'output_sorted_2048.csv'
+output_csv = 'output_sorted_4096.csv'
 with open(output_csv, mode='w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['Filename', 'Size', 'timeInSec', 'timeInMsec'])  # Write header

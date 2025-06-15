@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <omp.h>
 
 #define EPSILON 1e-6
 #ifndef SIZE
@@ -102,7 +103,6 @@ void sparse_multiply_csc(float *A_values, int *A_row_indices, int *A_col_pointer
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < p; j++)
     {
-#pragma omp parallel for schedule(static)
 
         for (int k = B_col_pointers[j]; k < B_col_pointers[j + 1]; k++)
         {
@@ -110,7 +110,6 @@ void sparse_multiply_csc(float *A_values, int *A_row_indices, int *A_col_pointer
             float valueB = B_values[k];
 
             // Multiply with the corresponding column of A
-#pragma omp parallel for schedule(static)
 
             for (int i = A_col_pointers[rowB]; i < A_col_pointers[rowB + 1]; i++)
             {

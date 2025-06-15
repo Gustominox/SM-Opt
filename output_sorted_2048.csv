@@ -148,10 +148,10 @@ WA-CSC-OpenMP-Arm-48threads-4.csv,2048,70.69979,70699.79
 WA-CSC-OpenMP-Arm-48threads-5.csv,2048,70.76329,70763.29
 WA-CSC-OpenMP-Arm-48threads-1.csv,2048,71.97483,71974.83
 WA-NoFlags.csv,2048,81.32658,81326.58
+WA-NoFlags-Arm.csv,2048,285.04095,285040.95
 WA-CSC-16-check.csv,2048,,"
 "
 WA-AllFlags-1.csv,2048,,
 WA-CSC-4-check.csv,2048,,"
 "
-WA-NoFlags-Arm.csv,2048,,
 WA-OpenMP-128threads.csv,2048,,
