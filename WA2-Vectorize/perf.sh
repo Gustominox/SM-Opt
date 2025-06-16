@@ -26,7 +26,8 @@ fi
 echo "Compiling..."
 
 cd WA2-Vectorize
-make clean && make SIZE=${SIZE}
+# make clean && 
+make SIZE=${SIZE}
 
 echo "Start timing"
 

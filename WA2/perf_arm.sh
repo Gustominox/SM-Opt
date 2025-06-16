@@ -28,7 +28,8 @@ fi
 echo "Compiling..."
 
 cd WA2
-make clean && make SIZE=${SIZE}
+# make clean && 
+make SIZE=${SIZE}
 
 echo "Start timing"
 
