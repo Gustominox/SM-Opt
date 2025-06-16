@@ -160,7 +160,7 @@ int main()
 {
     srand((unsigned)time(NULL));
     int m = SIZE, n = SIZE, p = SIZE;
-    int percentZeros = 99;
+    int percentZeros = 90;
 
     // Create dense matrices A (m x n) and B (n x p)
     float **A = create_matrix(m, n, percentZeros);

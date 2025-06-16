@@ -31,7 +31,7 @@ for dir in "${dirs[@]}"; do
         for run in {1..5}; do
                 echo "Run ${run} for ${threads} threads..."
         sbatch --exclusive ./WA2/perf.sh WA-NoFlags-${run} ${SIZE}
-        sbatch --exclusive ./WA2/perf_arm.sh WA-NoFlags-Arm-${run} ${SIZE}
+        # sbatch --exclusive ./WA2/perf_arm.sh WA-NoFlags-Arm-${run} ${SIZE}
 
             done
             
@@ -122,7 +122,7 @@ for dir in "${dirs[@]}"; do
 
         elif [[ "$dir" == "WA2-Vectorize-OpenMP/" ]]; then
             # sbatch --exclusive ./$dir/perf.sh WA-OpenMP-16threads ${SIZE} 16
-            for threads in 2 4 8 16 32 64 96 128; do
+            for threads in 2 4 8 16 32 48 64 96 128; do
                 echo "Running with ${threads} threads..."
 
                 for run in {1..5}; do

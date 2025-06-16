@@ -115,7 +115,7 @@ int main()
     int p = SIZE; // Columns in matrix B.
 
     // Define the percentage of zeros to be inserted (e.g., 70% zeros).
-    int percentZeros = 99;
+    int percentZeros = 90;
 
     // Create matrices A and B with the specified sparsity.
     float **A = create_matrix(m, n, percentZeros);

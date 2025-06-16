@@ -1,0 +1,12 @@
+Match!
+151975.56,msec,task-clock,151975557536,100.00,1.000,CPUs utilized
+247,,context-switches,151975557536,100.00,0.002,K/sec
+0,,cpu-migrations,151975557536,100.00,0.000,K/sec
+67863,,page-faults,151975557536,100.00,0.447,K/sec
+512620577414,,cycles,126646310451,83.33,3.373,GHz
+225342146,,stalled-cycles-frontend,126645710930,83.33,0.04,frontend cycles idle
+464320937772,,stalled-cycles-backend,126646341661,83.33,90.58,backend cycles idle
+439626899573,,instructions,126647104255,83.33,0.86,insn per cycle
+,,,,,1.06,stalled cycles per insn
+9933154753,,branches,126647389126,83.33,65.360,M/sec
+28901969,,branch-misses,126645578552,83.33,0.29,of all branches
