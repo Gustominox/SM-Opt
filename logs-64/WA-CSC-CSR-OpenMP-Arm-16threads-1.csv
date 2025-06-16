@@ -1,9 +1,0 @@
-Match!
-19.03,msec,task-clock,19027630,100.00,0.787,CPUs utilized
-26,,context-switches,19027630,100.00,0.001,M/sec
-1,,cpu-migrations,19027630,100.00,0.053,K/sec
-49,,page-faults,19027630,100.00,0.003,M/sec
-37890402,,cycles,19082870,100.00,1.991,GHz
-15584988,,instructions,19082870,100.00,0.41,insn per cycle
-<not supported>,,branches,0,100.00,,
-108766,,branch-misses,19082870,100.00,,
