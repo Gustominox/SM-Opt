@@ -13,8 +13,8 @@ dirs=(
     # "WA2/"
     # "WA2-Vectorize/"
     # "WA2-CSC/"
-    # "WA2-CSC-CSR/"
-    "WA2-2xCSR/"
+    "WA2-CSC-CSR/"
+    # "WA2-2xCSR/"
     # "WA2-CSC-CSR-OpenMP/"
     # "WA2-CSC-OpenMP/"
     # "WA2-CSC-OpenMP-V2/"
@@ -51,7 +51,7 @@ for dir in "${dirs[@]}"; do
 
         elif [[ "$dir" == "WA2-CSC-CSR/" ]]; then
 
-        for run in {1..5}; do
+        for run in {1..1}; do
                 echo "Run ${run} for ${threads} threads..."
                 sbatch --exclusive ./WA2-CSC-CSR/perf.sh WA-CSC-CSR-${run} ${SIZE}
 
