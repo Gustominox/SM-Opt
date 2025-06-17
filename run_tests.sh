@@ -10,14 +10,16 @@ fi
 SIZE="$1"
 
 dirs=(
-    "WA2/"
-    "WA2-Vectorize/"
-    "WA2-CSC/"
-    "WA2-CSC-CSR/"
+    # "WA2/"
+    # "WA2-Vectorize/"
+    # "WA2-CSC/"
+    # "WA2-GPU/"
+    "WA2-GPU-Sycl/"
+    # "WA2-CSC-CSR/"
     # "WA2-CSC-CSR-OpenMP/"
     # "WA2-CSC-OpenMP/"
     # "WA2-CSC-OpenMP-V2/"
-    "WA2-Vectorize-OpenMP/"
+    # "WA2-Vectorize-OpenMP/"
 )
 
 
@@ -56,7 +58,21 @@ for dir in "${dirs[@]}"; do
 
             done
             
+        elif [[ "$dir" == "WA2-GPU/" ]]; then
 
+        for run in {1..1}; do
+                echo "Run ${run} for ${threads} threads..."
+                sbatch --exclusive ./WA2-GPU/perf_cuda.sh WA2-GPU-cuda-${run} ${SIZE}
+
+            done
+        
+        elif [[ "$dir" == "WA2-GPU-Sycl/" ]]; then
+
+        for run in {1..1}; do
+                echo "Run ${run} for ${threads} threads..."
+                sbatch --exclusive ./WA2-GPU-Sycl/perf_sycl.sh WA2-GPU-sycl-${run} ${SIZE}
+
+            done
     # 
         elif [[ "$dir" == "WA2-CSC-CSR-OpenMP/" ]]; then
             # sbatch --exclusive ./$dir/perf.sh WA-OpenMP-16threads ${SIZE} 16

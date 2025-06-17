@@ -1,9 +1,7 @@
 #!/bin/sh
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=12
-#SBATCH --ntasks-per-node=1
 #SBATCH --exclusive
-#SBATCH --time=00:40:00
+#SBATCH --time=00:10:00
 #SBATCH --partition=normal-a100-40
 #SBATCH --account=f202500001hpcvlabepicureg
 #SBATCH --output=./slurm-output/slurm-%j.out
@@ -12,9 +10,11 @@
 # Consider using SBATCH --exclusive option outside of the class
 # It ensures that no other user pollutes your measurements
 
-module --ignore_cache load GCC/12.3.0
-module --ignore_cache load CUDA/12.4.0
-source /share/apps-x86/ohpc/pub/apps/intel/oneapi/setvars.sh --force
+source /share/env/module_select.sh
+module purge
+
+module load GCC/12.3.0
+module load CUDA/12.4.0
 
 echo "Compiling..."
 output_file="$1"
@@ -27,10 +27,12 @@ else
     echo "Directory logs-${SIZE} already exists."
 fi
 
-make SIZE=${SIZE} OUTFILE=${output_file}_${SIZE}
+cd WA2-GPU
+
+make clean && make SIZE=${SIZE}
 
 echo "Start timing"
 
-perf stat -x, ./bin/${output_file}_${SIZE} > logs-${SIZE}/${output_file}.csv 2>&1
+perf stat -x, ./bin/sparse_cuda > ../logs-${SIZE}/${output_file}.csv 2>&1
 
 echo "Finished"
