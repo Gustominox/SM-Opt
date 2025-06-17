@@ -22,11 +22,11 @@ omp_num_threads=$3
 
 #cd WA2-CSC-OpenMP
 
-if [ ! -d "../logs-${SIZE}" ]; then
-    echo "Directory ../logs-${SIZE} does not exist. Creating it..."
-    mkdir -p ../logs-${SIZE}
+if [ ! -d "logs-${SIZE}" ]; then
+    echo "Directory logs-${SIZE} does not exist. Creating it..."
+    mkdir -p logs-${SIZE}
 else
-    echo "Directory ../logs-${SIZE} already exists."
+    echo "Directory logs-${SIZE} already exists."
 fi
 
 make SIZE=${SIZE} OUTFILE=${output_file}_${SIZE}
@@ -40,6 +40,6 @@ echo "ompThreads=${OMP_NUM_THREADS}"
 
 echo "Start timing"
 
-perf stat -x, ./bin/${output_file}_${SIZE} > ../logs-${SIZE}/${output_file}.csv 2>&1
+perf stat -x, ./bin/${output_file}_${SIZE} > logs-${SIZE}/${output_file}.csv 2>&1
 
 echo "Finished"

@@ -1,11 +1,11 @@
 #!/bin/sh
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=1
-#SBATCH --ntasks-per-node=128
+#SBATCH --cpus-per-task=12
+#SBATCH --ntasks-per-node=4
+#SBATCH --partition=normal-arm
 #SBATCH --exclusive
 #SBATCH --time=00:40:00
-#SBATCH --partition=normal-x86
-#SBATCH --account=f202500001hpcvlabepicurex
+#SBATCH --account=f202500001hpcvlabepicurea
 #SBATCH --output=./slurm-output/slurm-%j.out
 #SBATCH --error=./slurm-err/slurm-%j.err
 
@@ -22,11 +22,11 @@ omp_num_threads=$3
 
 #cd WA2-CSC-OpenMP
 
-if [ ! -d "../logs-${SIZE}" ]; then
-    echo "Directory ../logs-${SIZE} does not exist. Creating it..."
-    mkdir -p ../logs-${SIZE}
+if [ ! -d "logs-${SIZE}" ]; then
+    echo "Directory logs-${SIZE} does not exist. Creating it..."
+    mkdir -p logs-${SIZE}
 else
-    echo "Directory ../logs-${SIZE} already exists."
+    echo "Directory logs-${SIZE} already exists."
 fi
 
 make SIZE=${SIZE} OUTFILE=${output_file}_${SIZE}
@@ -40,6 +40,6 @@ echo "ompThreads=${OMP_NUM_THREADS}"
 
 echo "Start timing"
 
-perf stat -x, ./bin/${output_file}_${SIZE} > ../logs-${SIZE}/${output_file}.csv 2>&1
+perf stat -x, ./bin/${output_file}_${SIZE} > logs-${SIZE}/${output_file}.csv 2>&1
 
 echo "Finished"
