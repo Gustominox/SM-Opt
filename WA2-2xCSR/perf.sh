@@ -27,7 +27,7 @@ echo "Compiling..."
 
 cd WA2-2xCSR
 # make clean && 
-make SIZE=${SIZE}
+# make clean && make SIZE=${SIZE}
 
 echo "Start timing"
 
